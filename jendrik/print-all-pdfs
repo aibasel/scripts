@@ -1,0 +1,5 @@
+#! /bin/bash
+
+set -euo pipefail
+
+find . -iname "*.pdf" ! -path "*/__MACOSX/*" -exec lp -o sides=two-sided-long-edge {} \;
