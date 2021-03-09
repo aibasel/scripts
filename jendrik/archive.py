@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 from __future__ import print_function
 
@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument("files", nargs="+")
     parser.add_argument("--keep", action="store_true")
     parser.add_argument("-c", "--compression", default="xz",
-                        choices=COMPRESSION_METHODS.keys() + ["zip"])
+                        choices=list(COMPRESSION_METHODS.keys()) + ["zip"])
     return parser.parse_args()
 
 
@@ -28,19 +28,21 @@ def main():
     args = parse_args()
 
     for filename in args.files:
+        filename = os.path.abspath(filename)
         filename = filename.rstrip("/")
+        dirname, basename = os.path.split(filename)
 
         if args.compression == "zip":
-            tarball = os.path.basename(filename) + ".zip"
-            cmd = ["zip", "-r", tarball, filename]
+            tarball = basename + ".zip"
+            cmd = ["zip", "-r", tarball, basename]
         else:
-            tarball = os.path.basename(filename) + ".tar." + args.compression
+            tarball = basename + ".tar." + args.compression
             cmd = [
                 "tar", "-" + COMPRESSION_METHODS[args.compression],
-                "-cvf", tarball, filename]
+                "-cvf", tarball, basename]
 
         print("\nArchive {} under {}\n".format(filename, tarball))
-        subprocess.check_call(cmd)
+        subprocess.check_call(cmd, cwd=dirname)
 
         if not args.keep:
             if os.path.isdir(filename):
