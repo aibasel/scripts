@@ -1,9 +1,9 @@
 #!/bin/bash
 
-INFAI_USERS=$(ls -1 /infai | sort)
+INFAI_USERS=$(ls -1 /infai | awk '{ print substr($1,1,7) }' | sort)
 
 function get_users_running_autonice {
-    ps aux | grep "autonice.py.* $1" | grep -v grep  | awk '{ print $1 }' | sort | uniq
+    ps aux | grep "autonice.py.* $1" | grep -v grep  | awk '{ print substr($1,1,7) }' | sort | uniq
 }
 
 function get_users_not_running_autonice {
